@@ -34,3 +34,365 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+```
+nextwsei
+├─ .eslintrc.json
+├─ .git
+│  ├─ COMMIT_EDITMSG
+│  ├─ config
+│  ├─ description
+│  ├─ HEAD
+│  ├─ hooks
+│  │  ├─ applypatch-msg.sample
+│  │  ├─ commit-msg.sample
+│  │  ├─ fsmonitor-watchman.sample
+│  │  ├─ post-update.sample
+│  │  ├─ pre-applypatch.sample
+│  │  ├─ pre-commit.sample
+│  │  ├─ pre-merge-commit.sample
+│  │  ├─ pre-push.sample
+│  │  ├─ pre-rebase.sample
+│  │  ├─ pre-receive.sample
+│  │  ├─ prepare-commit-msg.sample
+│  │  ├─ push-to-checkout.sample
+│  │  └─ update.sample
+│  ├─ index
+│  ├─ info
+│  │  └─ exclude
+│  ├─ logs
+│  │  ├─ HEAD
+│  │  └─ refs
+│  │     └─ heads
+│  │        └─ master
+│  ├─ objects
+│  │  ├─ 00
+│  │  │  └─ 4145cddf3f9db91b57b9cb596683c8eb420862
+│  │  ├─ 07
+│  │  │  └─ 678489e57d926cd5451e598bbbdad61434ab55
+│  │  ├─ 13
+│  │  │  └─ 62b8826a5aa4c94cc17fbe1f22cdad10416188
+│  │  ├─ 1a
+│  │  │  └─ 69fd2a450afc3bf47e08b22c149190df0ffdb4
+│  │  ├─ 1b
+│  │  │  └─ 62daacff96dad6584e71cd962051b82957c313
+│  │  ├─ 37
+│  │  │  └─ 224185490e6db2d26a574d66d4d476336bf644
+│  │  ├─ 51
+│  │  │  └─ 74b28c565c285e3e312ec5178be64fbeca8398
+│  │  ├─ 56
+│  │  │  └─ 7f17b0d7c7fb662c16d4357dd74830caf2dccb
+│  │  ├─ 5b
+│  │  │  └─ 758104d5b0b692e827668595abd6a674ffd515
+│  │  ├─ 6b
+│  │  │  └─ 717ad346d3dff8914e9545038c799226d59c89
+│  │  ├─ 71
+│  │  │  └─ 8d6fea4835ec2d246af9800eddb7ffb276240c
+│  │  ├─ 77
+│  │  │  └─ 053960334e2e34dc584dea8019925c3b4ccca9
+│  │  ├─ 80
+│  │  │  └─ f8a78a402611288bf67ff5b5c31b2ee21e6f6b
+│  │  ├─ 90
+│  │  │  └─ 07252c56852fbbdfe53e803bbdb45645efafa2
+│  │  ├─ a0
+│  │  │  └─ 3e56c1dfd3f348517895719b5306db1927953f
+│  │  ├─ a3
+│  │  │  └─ 6cde01c60b91e16e4c976d00546686e2d4e470
+│  │  ├─ b2
+│  │  │  └─ b2a44f6ebc70c450043c05a002e7a93ba5d651
+│  │  ├─ c2
+│  │  │  └─ 4f45f6157757c9d901e69a1608cd88159cf2bd
+│  │  ├─ c8
+│  │  │  └─ 8f389de09f418da376598c42e8788d4fb6d172
+│  │  ├─ d3
+│  │  │  └─ 2cc78b89fc9af2b1caf304864e10f041df05e6
+│  │  ├─ d8
+│  │  │  └─ b93235f205efbea6e8fceb1c9ddb57ddddf28d
+│  │  ├─ e2
+│  │  │  └─ 15bc4ccf138bbc38ad58ad57e92135484b3c0f
+│  │  ├─ e9
+│  │  │  └─ ffa3083ad279ecf95fd8eae59cb253e9a539c4
+│  │  ├─ f2
+│  │  │  └─ ae185cbfd16946a534d819e9eb03924abbcc49
+│  │  ├─ fc
+│  │  │  └─ b741a341df889205f9868e01cdef51cc530ae9
+│  │  ├─ info
+│  │  └─ pack
+│  └─ refs
+│     ├─ heads
+│     │  └─ master
+│     └─ tags
+├─ .gitignore
+├─ app
+│  ├─ (protected)
+│  │  ├─ layout.tsx
+│  │  └─ user
+│  │     ├─ changepassword
+│  │     ├─ profile
+│  │     └─ signout
+│  ├─ (public)
+│  │  └─ user
+│  │     ├─ register
+│  │     │  └─ page.tsx
+│  │     └─ signin
+│  │        └─ page.tsx
+│  ├─ favicon.ico
+│  ├─ fonts
+│  │  ├─ GeistMonoVF.woff
+│  │  └─ GeistVF.woff
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  ├─ not-found.tsx
+│  └─ page.tsx
+├─ components
+│  ├─ app-sidebar.tsx
+│  ├─ login-form.tsx
+│  ├─ nav-main.tsx
+│  ├─ nav-projects.tsx
+│  ├─ nav-user.tsx
+│  ├─ navbar.tsx
+│  ├─ team-switcher.tsx
+│  └─ ui
+│     ├─ avatar.tsx
+│     ├─ breadcrumb.tsx
+│     ├─ button.tsx
+│     ├─ card.tsx
+│     ├─ collapsible.tsx
+│     ├─ dropdown-menu.tsx
+│     ├─ input.tsx
+│     ├─ label.tsx
+│     ├─ separator.tsx
+│     ├─ sheet.tsx
+│     ├─ sidebar.tsx
+│     ├─ skeleton.tsx
+│     └─ tooltip.tsx
+├─ components.json
+├─ hooks
+│  └─ use-mobile.tsx
+├─ lib
+│  ├─ firebase
+│  │  └─ AuthContext.ts
+│  ├─ firebase.ts
+│  └─ utils.ts
+├─ next.config.ts
+├─ package-lock.json
+├─ package.json
+├─ postcss.config.mjs
+├─ public
+│  ├─ file.svg
+│  ├─ globe.svg
+│  ├─ next.svg
+│  ├─ vercel.svg
+│  └─ window.svg
+├─ README.md
+├─ tailwind.config.ts
+└─ tsconfig.json
+
+```
+```
+nextwsei
+├─ .eslintrc.json
+├─ app
+│  ├─ (protected)
+│  │  ├─ layout.tsx
+│  │  └─ user
+│  │     ├─ changepassword
+│  │     ├─ profile
+│  │     └─ signout
+│  ├─ (public)
+│  │  └─ user
+│  │     ├─ register
+│  │     │  └─ page.tsx
+│  │     └─ signin
+│  │        └─ page.tsx
+│  ├─ favicon.ico
+│  ├─ fonts
+│  │  ├─ GeistMonoVF.woff
+│  │  └─ GeistVF.woff
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  ├─ not-found.tsx
+│  └─ page.tsx
+├─ components
+│  ├─ app-sidebar.tsx
+│  ├─ login-form.tsx
+│  ├─ nav-main.tsx
+│  ├─ nav-projects.tsx
+│  ├─ nav-user.tsx
+│  ├─ navbar.tsx
+│  ├─ team-switcher.tsx
+│  └─ ui
+│     ├─ avatar.tsx
+│     ├─ breadcrumb.tsx
+│     ├─ button.tsx
+│     ├─ card.tsx
+│     ├─ collapsible.tsx
+│     ├─ dropdown-menu.tsx
+│     ├─ input.tsx
+│     ├─ label.tsx
+│     ├─ separator.tsx
+│     ├─ sheet.tsx
+│     ├─ sidebar.tsx
+│     ├─ skeleton.tsx
+│     └─ tooltip.tsx
+├─ components.json
+├─ hooks
+│  └─ use-mobile.tsx
+├─ lib
+│  ├─ firebase
+│  │  └─ AuthContext.ts
+│  ├─ firebase.ts
+│  └─ utils.ts
+├─ next.config.ts
+├─ package-lock.json
+├─ package.json
+├─ postcss.config.mjs
+├─ public
+│  ├─ file.svg
+│  ├─ globe.svg
+│  ├─ next.svg
+│  ├─ vercel.svg
+│  └─ window.svg
+├─ README.md
+├─ tailwind.config.ts
+└─ tsconfig.json
+
+```
+```
+nextwsei
+├─ .eslintrc.json
+├─ app
+│  ├─ (protected)
+│  │  ├─ layout.tsx
+│  │  └─ user
+│  │     ├─ changepassword
+│  │     ├─ profile
+│  │     └─ signout
+│  ├─ (public)
+│  │  └─ user
+│  │     ├─ register
+│  │     │  └─ page.tsx
+│  │     └─ signin
+│  │        └─ page.tsx
+│  ├─ favicon.ico
+│  ├─ fonts
+│  │  ├─ GeistMonoVF.woff
+│  │  └─ GeistVF.woff
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  ├─ not-found.tsx
+│  └─ page.tsx
+├─ components
+│  ├─ app-sidebar.tsx
+│  ├─ login-form.tsx
+│  ├─ nav-main.tsx
+│  ├─ nav-projects.tsx
+│  ├─ nav-user.tsx
+│  ├─ navbar.tsx
+│  ├─ team-switcher.tsx
+│  └─ ui
+│     ├─ avatar.tsx
+│     ├─ breadcrumb.tsx
+│     ├─ button.tsx
+│     ├─ card.tsx
+│     ├─ collapsible.tsx
+│     ├─ dropdown-menu.tsx
+│     ├─ input.tsx
+│     ├─ label.tsx
+│     ├─ separator.tsx
+│     ├─ sheet.tsx
+│     ├─ sidebar.tsx
+│     ├─ skeleton.tsx
+│     └─ tooltip.tsx
+├─ components.json
+├─ hooks
+│  └─ use-mobile.tsx
+├─ lib
+│  ├─ firebase
+│  │  └─ AuthContext.tsx
+│  ├─ firebase.ts
+│  └─ utils.ts
+├─ next.config.ts
+├─ package-lock.json
+├─ package.json
+├─ postcss.config.mjs
+├─ public
+│  ├─ file.svg
+│  ├─ globe.svg
+│  ├─ next.svg
+│  ├─ vercel.svg
+│  └─ window.svg
+├─ README.md
+├─ tailwind.config.ts
+└─ tsconfig.json
+
+```
+```
+nextwsei
+├─ .eslintrc.json
+├─ app
+│  ├─ (protected)
+│  │  ├─ layout.tsx
+│  │  └─ user
+│  │     ├─ changepassword
+│  │     ├─ profile
+│  │     └─ signout
+│  ├─ (public)
+│  │  └─ user
+│  │     ├─ register
+│  │     │  └─ page.tsx
+│  │     └─ signin
+│  │        └─ page.tsx
+│  ├─ favicon.ico
+│  ├─ fonts
+│  │  ├─ GeistMonoVF.woff
+│  │  └─ GeistVF.woff
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  ├─ not-found.tsx
+│  └─ page.tsx
+├─ components
+│  ├─ app-sidebar.tsx
+│  ├─ login-form.tsx
+│  ├─ nav-main.tsx
+│  ├─ nav-projects.tsx
+│  ├─ nav-user.tsx
+│  ├─ navbar.tsx
+│  ├─ team-switcher.tsx
+│  └─ ui
+│     ├─ avatar.tsx
+│     ├─ breadcrumb.tsx
+│     ├─ button.tsx
+│     ├─ card.tsx
+│     ├─ collapsible.tsx
+│     ├─ dropdown-menu.tsx
+│     ├─ input.tsx
+│     ├─ label.tsx
+│     ├─ separator.tsx
+│     ├─ sheet.tsx
+│     ├─ sidebar.tsx
+│     ├─ skeleton.tsx
+│     └─ tooltip.tsx
+├─ components.json
+├─ hooks
+│  └─ use-mobile.tsx
+├─ lib
+│  ├─ firebase
+│  │  └─ AuthContext.tsx
+│  ├─ firebase.ts
+│  └─ utils.ts
+├─ next.config.ts
+├─ package-lock.json
+├─ package.json
+├─ postcss.config.mjs
+├─ public
+│  ├─ file.svg
+│  ├─ globe.svg
+│  ├─ next.svg
+│  ├─ vercel.svg
+│  └─ window.svg
+├─ README.md
+├─ tailwind.config.ts
+└─ tsconfig.json
+
+```
