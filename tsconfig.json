@@ -12,6 +12,7 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"jsx": "preserve",
+		"types": ["react", "react-dom"],
 		"incremental": true,
 		"plugins": [
 			{
@@ -29,6 +30,6 @@
 		".next/types/**/*.ts",
 		"lib/firebase/AuthContext.jsx",
 		"app/(public)/user/signin/page.jsx"
-	],
+, "app/(protected)/layout.tsx"	],
 	"exclude": ["node_modules"]
 }

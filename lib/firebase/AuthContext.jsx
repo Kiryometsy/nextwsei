@@ -1,3 +1,9 @@
+'use client'
+
+import { onAuthStateChanged } from "firebase/auth";
+import { useContext, createContext, useEffect, useState } from "react";
+import { auth } from "@/lib/firebase";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

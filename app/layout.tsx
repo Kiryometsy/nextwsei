@@ -1,5 +1,6 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { AuthProvider } from "@/lib/firebase/AuthContext";
 
 import Navbar from "@/components/navbar";
 
@@ -30,6 +31,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
+			<AuthProvider>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
@@ -41,6 +43,7 @@ export default function RootLayout({
 					</div>
 				</SidebarProvider>
 			</body>
+			</AuthProvider>
 		</html>
 	);
 }

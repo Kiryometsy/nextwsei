@@ -13,7 +13,9 @@ function Protected({ children }: { children: React.ReactNode }) {
 
 	useLayoutEffect(() => {
 		// If user is not logged in, redirect them to the login page
+		console.log("teeeeeeeeeeeeeeeeeeeeeeeeeees", user)
 		if (!user) {
+			console.log("przejscie aaaaaaaaaaaaaaaaaaaaaaaaa")
 			redirect(`/user/signin?returnUrl=${returnUrl}`); // Pass the current path to returnUrl
 		}
 	}, [user, returnUrl]); // Re-run when user or returnUrl changes
