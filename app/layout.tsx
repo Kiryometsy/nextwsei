@@ -32,17 +32,17 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<AuthProvider>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
-				<SidebarProvider>
-					<AppSidebar />
-					<div className="w-full">
-						<Navbar className="fixed top-0 w-dvw" />
-						<main>{children}</main>
-					</div>
-				</SidebarProvider>
-			</body>
+				<body
+					className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+				>
+					<SidebarProvider>
+						<AppSidebar />
+						<div className="w-full">
+							<Navbar className="fixed top-0 w-dvw" />
+							<main>{children}</main>
+						</div>
+					</SidebarProvider>
+				</body>
 			</AuthProvider>
 		</html>
 	);

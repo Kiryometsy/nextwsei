@@ -2,25 +2,44 @@
 
 "use client";
 
-import { useAuth } from "@/lib/firebase/AuthContext"; // Adjust the path if needed // Import the useAuth hook
-import { useLayoutEffect } from "react";
+import { useAuth } from "@/lib/firebase/AuthContext";
+import { useState, useEffect } from "react";
 import { redirect } from "next/navigation";
 import { usePathname } from "next/navigation";
 
 function Protected({ children }: { children: React.ReactNode }) {
-	const { user } = useAuth(); // Get user from the auth context
+	const { user, loading } = useAuth(); // Get user and loading states from the auth context
 	const returnUrl = usePathname(); // Get the current URL path
+	const [authChecked, setAuthChecked] = useState(false); // State to track when authentication check is done
 
-	useLayoutEffect(() => {
-		// If user is not logged in, redirect them to the login page
-		console.log("teeeeeeeeeeeeeeeeeeeeeeeeeees", user)
-		if (!user) {
-			console.log("przejscie aaaaaaaaaaaaaaaaaaaaaaaaa")
-			redirect(`/user/signin?returnUrl=${returnUrl}`); // Pass the current path to returnUrl
-		}
-	}, [user, returnUrl]); // Re-run when user or returnUrl changes
+	useEffect(() => {
+		(async () => {
+			// Wait for the loading state to resolve
+			if (!loading) {
+				if (!user) {
+					// Redirect if no user is authenticated
+					redirect(`/user/signin?returnUrl=${returnUrl}`);
+				} else {
+					// Set authChecked to true if user is authenticated
+					setAuthChecked(true);
+				}
+			}
+		})();
+	}, [user, loading, returnUrl]); // Re-run when user, loading, or returnUrl changes
 
-	return <>{children}</>; // Render the protected content if the user is authenticated
+	// Render a loading indicator while awaiting authentication resolution
+	if (!authChecked) {
+		return <div>Loading...</div>;
+	}
+
+	// Render the protected content if the user is authenticated
+	return <>{children}</>;
 }
 
-export default Protected;
+export default function ProtectedLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	return <Protected>{children}</Protected>;
+}

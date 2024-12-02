@@ -29,7 +29,11 @@ export default function SignInForm() {
 			.then(() => {
 				signInWithEmailAndPassword(auth, email, password)
 					.then((userCredential) => {
-						router.push(returnUrl || "/user/register"); // Przekierowanie po sukcesie
+						if (!userCredential.user.emailVerified) {
+							router.push("/user/verify");
+						} else {
+							router.push(returnUrl || "/"); // Przekierowanie po sukcesie
+						}
 					})
 					.catch((error) => {
 						const errorCode = error.code;

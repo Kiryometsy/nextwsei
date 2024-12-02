@@ -77,10 +77,12 @@ export function NavUser({
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<BadgeCheck />
-								Account
-							</DropdownMenuItem>
+							<Link href="/user/profile" passHref>
+								<DropdownMenuItem>
+									<BadgeCheck />
+									Account
+								</DropdownMenuItem>
+							</Link>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<Link href="/user/register" passHref>
