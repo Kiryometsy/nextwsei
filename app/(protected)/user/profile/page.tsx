@@ -1,4 +1,6 @@
-"use client";
+"use client"
+import Image from "next/image";
+import { useState } from "react";
 import {
 	Card,
 	CardHeader,
@@ -11,9 +13,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/firebase/AuthContext";
-import { updateProfile, reload } from "firebase/auth";
-import { useState } from "react";
+import { updateProfile } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { db } from '@/lib/firebase'
+import { collection, addDoc, setDoc, doc } from 'firebase/firestore'
 
 export default function ProfileForm() {
 	const { user } = useAuth();
@@ -21,43 +24,67 @@ export default function ProfileForm() {
 		displayName: user?.displayName || "",
 		photoURL: user?.photoURL || "",
 	});
+    const [addressData, setAddressData] = useState({
+        city: "",
+        street: "",
+        zipCode: ""
+    })
+	const [profileImage, setProfileImage] = useState(user?.photoURL || ""); // State for displayed image
 	const [error, setError] = useState("");
+	const [submitError, setSubmitError] = useState(""); // To show errors only after submit
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const router=useRouter()
+	const router = useRouter();
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
+    const handleChangeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setFormData((prev) => ({ ...prev, [name]: value }));
+	};
+
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		setError(""); // Reset error messages
+		setError("");
+		setSubmitError("");
 		setIsSubmitting(true);
 
 		try {
+			// Validate photoURL
+			if (formData.photoURL && !isValidHttpUrl(formData.photoURL)) {
+				setSubmitError("Invalid photo URL. Please provide a valid image link.");
+				setIsSubmitting(false);
+				return;
+			}
+
 			// Update profile
 			await updateProfile(user, {
 				displayName: formData.displayName,
 				photoURL: formData.photoURL,
 			});
-			console.log("Profile updated successfully!");
 
-			// Reload the updated user
-			router.refresh()
-			console.log("User data refreshed!");
+			// Update the displayed profile image
+			setProfileImage(formData.photoURL);
 
-			// Update form data
-			setFormData({
-				displayName: user.displayName || "",
-				photoURL: user.photoURL || "",
-			});
+			// Reload user data
+			router.refresh();
 		} catch (err: any) {
-			setError(err.message); // Capture errors
-			console.dir(err);
+			setSubmitError(err.message);
 		} finally {
 			setIsSubmitting(false);
+		}
+	};
+
+	// Function to validate URLs
+	const isValidHttpUrl = (url: string) => {
+		try {
+			const parsedUrl = new URL(url);
+			return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+		} catch (_) {
+			return false;
 		}
 	};
 
@@ -73,6 +100,22 @@ export default function ProfileForm() {
 					<CardDescription>Update your account information</CardDescription>
 				</CardHeader>
 				<CardContent>
+					{/* Display current profile image */}
+					<div className="flex justify-center mb-4">
+						{profileImage ? (
+							<Image
+								src={profileImage}
+								alt="Profile Picture"
+								width={100}
+								height={100}
+								className="rounded-full"
+							/>
+						) : (
+							<div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center">
+								<span className="text-gray-500">No Photo</span>
+							</div>
+						)}
+					</div>
 					<form onSubmit={handleSubmit} className="space-y-4">
 						<div className="space-y-2">
 							<Label htmlFor="displayName">Display Name</Label>
@@ -110,7 +153,44 @@ export default function ProfileForm() {
 							/>
 						</div>
 
-						{error && <div className="text-red-500 text-sm">{error}</div>}
+                        <div className="space-y-2">
+							<Label htmlFor="city">city</Label>
+							<Input
+								id="city"
+								name="city"
+								type="text"
+								placeholder="city"
+								value={addressData?.city}
+								onChange={handleChange}
+							/>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="street">street</Label>
+							<Input
+								id="street"
+								name="street"
+								type="text"
+								placeholder="street"
+								value={addressData?.street}
+                                onChange={handleChange}
+							/>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="zipCode">zipCode</Label>
+							<Input
+								id="zipCode"
+								name="zipCode"
+								type="text"
+								placeholder="zipCode"
+								value={addressData?.zipCode}
+								onChange={handleChange}
+							/>
+						</div>
+
+						{/* Show submission error if any */}
+						{submitError && (
+							<div className="text-red-500 text-sm">{submitError}</div>
+						)}
 
 						<Button type="submit" className="w-full" disabled={isSubmitting}>
 							{isSubmitting ? "Updating..." : "Update Profile"}
@@ -119,7 +199,7 @@ export default function ProfileForm() {
 				</CardContent>
 				<CardFooter>
 					<p className="text-gray-500 text-sm">
-						Changes will be reflected immediately.
+						Changes will be reflected immediately after submission.
 					</p>
 				</CardFooter>
 			</Card>
