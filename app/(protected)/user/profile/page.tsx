@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/firebase/AuthContext";
 import { updateProfile, reload } from "firebase/auth";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ProfileForm() {
 	const { user } = useAuth();
@@ -22,6 +23,8 @@ export default function ProfileForm() {
 	});
 	const [error, setError] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const router=useRouter()
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -42,7 +45,7 @@ export default function ProfileForm() {
 			console.log("Profile updated successfully!");
 
 			// Reload the updated user
-			await reload(user);
+			router.refresh()
 			console.log("User data refreshed!");
 
 			// Update form data
