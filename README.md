@@ -42,6 +42,8 @@ nextwsei
 │  ├─ (protected)
 │  │  ├─ layout.tsx
 │  │  └─ user
+│  │     ├─ articles
+│  │     │  └─ page.tsx
 │  │     ├─ changepassword
 │  │     │  └─ page.tsx
 │  │     ├─ profile
@@ -52,8 +54,10 @@ nextwsei
 │  │  └─ user
 │  │     ├─ register
 │  │     │  └─ page.tsx
-│  │     └─ signin
-│  │        └─ page.jsx
+│  │     ├─ signin
+│  │     │  └─ page.jsx
+│  │     └─ verify
+│  │        └─ page.tsx
 │  ├─ favicon.ico
 │  ├─ fonts
 │  │  ├─ GeistMonoVF.woff

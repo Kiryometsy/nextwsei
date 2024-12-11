@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import { useAuth } from "@/lib/firebase/AuthContext";
 import { Card } from "@/components/ui/card";
 
@@ -18,9 +18,10 @@ interface User {
 async function DbCollectionArtGet(user: User) {
 	const articlesRef = collection(db, "articles");
 	let tab: any[] = [];
+	const userRef = doc(db,"user",user?.uid)
 
 	// Adjusted query to get documents where 'user' is not empty
-	const q = query(articlesRef, where("user", "!=", ""));
+	const q = query(articlesRef, where("users", "==", userRef));
 
 	const querySnapshot = await getDocs(q);
 
