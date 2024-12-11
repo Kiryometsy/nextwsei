@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
 	Card,
 	CardHeader,
@@ -15,76 +15,93 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/firebase/AuthContext";
 import { updateProfile } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { db } from '@/lib/firebase'
-import { collection, addDoc, setDoc, doc } from 'firebase/firestore'
+import { db } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { useForm } from "react-hook-form";
 
 export default function ProfileForm() {
 	const { user } = useAuth();
-	const [formData, setFormData] = useState({
-		displayName: user?.displayName || "",
-		photoURL: user?.photoURL || "",
-	});
-    const [addressData, setAddressData] = useState({
-        city: "",
-        street: "",
-        zipCode: ""
-    })
 	const [profileImage, setProfileImage] = useState(user?.photoURL || ""); // State for displayed image
-	const [error, setError] = useState("");
-	const [submitError, setSubmitError] = useState(""); // To show errors only after submit
-	const [isSubmitting, setIsSubmitting] = useState(false);
-
+	const [isLoading, setIsLoading] = useState(true); // Loading state to disable inputs until data is fetched
 	const router = useRouter();
+
+	const {
+		register,
+		setValue,
+		handleSubmit,
+		watch,
+		formState: { errors },
+	} = useForm({
+		defaultValues: {
+			email: user?.email,
+			displayName: user?.displayName,
+			photoURL: user?.photoURL,
+			city: "",
+			street: "",
+			zipCode: "",
+		},
+	});
+
+	useEffect(() => {
+		// Fetch user address from Firestore
+		const fetchUserData = async () => {
+			if (user?.uid) {
+				try {
+					const snapshot = await getDoc(doc(db, "users", user.uid));
+					if (snapshot.exists()) {
+						const address = snapshot.data().address;
+						// Set values for address fields using setValue
+						setValue("city", address.city);
+						setValue("zipCode", address.zipCode);
+						setValue("street", address.street);
+					}
+				} catch (err) {
+					console.error("Error fetching user data:", err);
+				} finally {
+					setIsLoading(false); // Set loading state to false after fetching
+				}
+			}
+		};
+
+		fetchUserData();
+	}, [user, setValue]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		setFormData((prev) => ({ ...prev, [name]: value }));
+		// This will be handled by react-hook-form via setValue, no need for manual state handling
 	};
 
-    const handleChangeAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setFormData((prev) => ({ ...prev, [name]: value }));
-	};
-
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setError("");
-		setSubmitError("");
-		setIsSubmitting(true);
-
+	const handleSubmitForm = async (data: any) => {
+		setIsLoading(true);
 		try {
-			// Validate photoURL
-			if (formData.photoURL && !isValidHttpUrl(formData.photoURL)) {
-				setSubmitError("Invalid photo URL. Please provide a valid image link.");
-				setIsSubmitting(false);
-				return;
-			}
-
 			// Update profile
 			await updateProfile(user, {
-				displayName: formData.displayName,
-				photoURL: formData.photoURL,
+				displayName: data.displayName,
+				photoURL: data.photoURL,
 			});
 
+			// Update Firestore document in "users" collection
+			await setDoc(
+				doc(db, "users", user.uid),
+				{
+					address: {
+						city: data.city,
+						street: data.street,
+						zipCode: data.zipCode,
+					},
+				},
+				{ merge: true }
+			); // Use merge to avoid overwriting other fields
+
 			// Update the displayed profile image
-			setProfileImage(formData.photoURL);
+			setProfileImage(data.photoURL);
 
 			// Reload user data
 			router.refresh();
 		} catch (err: any) {
-			setSubmitError(err.message);
+			console.error("Error updating profile:", err);
 		} finally {
-			setIsSubmitting(false);
-		}
-	};
-
-	// Function to validate URLs
-	const isValidHttpUrl = (url: string) => {
-		try {
-			const parsedUrl = new URL(url);
-			return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
-		} catch (_) {
-			return false;
+			setIsLoading(false);
 		}
 	};
 
@@ -116,84 +133,72 @@ export default function ProfileForm() {
 							</div>
 						)}
 					</div>
-					<form onSubmit={handleSubmit} className="space-y-4">
+					<form onSubmit={handleSubmit(handleSubmitForm)} className="space-y-4">
 						<div className="space-y-2">
 							<Label htmlFor="displayName">Display Name</Label>
 							<Input
 								id="displayName"
-								name="displayName"
+								{...register("displayName", { required: true })}
 								type="text"
 								placeholder="Your display name"
-								value={formData.displayName}
-								onChange={handleChange}
-								required
+								disabled={isLoading} // Disable input until data is loaded
 							/>
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="email">Email</Label>
-							<Input
-								id="email"
-								name="email"
-								type="email"
-								placeholder="Your email"
-								value={user?.email || ""}
-								disabled
-								readOnly
-							/>
+							<Input id="email" value={user?.email || ""} disabled readOnly />
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="photoURL">Photo URL</Label>
 							<Input
 								id="photoURL"
-								name="photoURL"
+								{...register("photoURL")}
 								type="url"
 								placeholder="Link to your profile picture"
-								value={formData.photoURL}
-								onChange={handleChange}
+								disabled={isLoading} // Disable input until data is loaded
 							/>
 						</div>
 
-                        <div className="space-y-2">
-							<Label htmlFor="city">city</Label>
+						<div className="space-y-2">
+							<Label htmlFor="city">City</Label>
 							<Input
 								id="city"
-								name="city"
+								{...register("city")}
 								type="text"
-								placeholder="city"
-								value={addressData?.city}
-								onChange={handleChange}
+								placeholder="City"
+								disabled={isLoading} // Disable input until data is loaded
 							/>
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="street">street</Label>
+							<Label htmlFor="street">Street</Label>
 							<Input
 								id="street"
-								name="street"
+								{...register("street")}
 								type="text"
-								placeholder="street"
-								value={addressData?.street}
-                                onChange={handleChange}
+								placeholder="Street"
+								disabled={isLoading} // Disable input until data is loaded
 							/>
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="zipCode">zipCode</Label>
+							<Label htmlFor="zipCode">Zip Code</Label>
 							<Input
 								id="zipCode"
-								name="zipCode"
+								{...register("zipCode")}
 								type="text"
-								placeholder="zipCode"
-								value={addressData?.zipCode}
-								onChange={handleChange}
+								placeholder="Zip Code"
+								disabled={isLoading} // Disable input until data is loaded
 							/>
 						</div>
 
 						{/* Show submission error if any */}
-						{submitError && (
-							<div className="text-red-500 text-sm">{submitError}</div>
+						{errors?.displayName && (
+							<div className="text-red-500 text-sm">
+								Display Name is required.
+							</div>
 						)}
 
-						<Button type="submit" className="w-full" disabled={isSubmitting}>
-							{isSubmitting ? "Updating..." : "Update Profile"}
+						<Button type="submit" className="w-full" disabled={isLoading}>
+							{isLoading ? "Updating..." : "Update Profile"}
 						</Button>
 					</form>
 				</CardContent>
