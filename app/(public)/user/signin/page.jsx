@@ -42,7 +42,7 @@ export default function SignInForm() {
 						// Ustaw komunikat błędu na podstawie kodu błędu
 						if (errorCode === "auth/wrong-password") {
 							setError("The password is incorrect. Please try again.");
-						} else if (errorCode === "auth/user-not-found") {
+						} else if (errorCode === "auth/invalid-credential") {
 							setError("No account found with this email address.");
 						} else {
 							setError("An error occurred. Please try again later.");
