@@ -16,7 +16,6 @@ import {
 	getAuth,
 	createUserWithEmailAndPassword,
 	sendEmailVerification,
-	signOut,
 } from "firebase/auth";
 import { useAuth } from "@/lib/firebase/AuthContext";
 import { useState } from "react";
@@ -71,9 +70,13 @@ export default function RegisterForm() {
 
 			// Redirect to verify page
 			router.push("/user/verify");
-		} catch (error: any) {
-			setRegisterError(error.message); // Capture registration errors
-			console.dir(error);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				setRegisterError(error.message); // Capture registration errors
+				console.dir(error);
+			} else {
+				setRegisterError("An unknown error occurred.");
+			}
 		} finally {
 			setIsSubmitting(false);
 		}

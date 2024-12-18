@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, doc } from "firebase/firestore";
+import {
+	collection,
+	query,
+	where,
+	getDocs,
+	doc,
+	Timestamp,
+	DocumentReference,
+} from "firebase/firestore";
 import { useAuth } from "@/lib/firebase/AuthContext";
 import { Card } from "@/components/ui/card";
 
@@ -14,27 +22,42 @@ interface User {
 	photoURL?: string;
 }
 
+interface Article {
+	title: string;
+	content: string;
+	date: Timestamp; // The 'date' is a Timestamp in Firestore
+	user: DocumentReference; // The 'user' field is a reference to the 'users' collection
+}
+
 // This is the function to fetch articles for a user
-async function DbCollectionArtGet(user: User) {
+async function DbCollectionArtGet(user: User): Promise<Article[]> {
 	const articlesRef = collection(db, "articles");
-	let tab: any[] = [];
-	const userRef = doc(db,"user",user?.uid)
+
+	const userRef = doc(db, "users", user?.uid);
 
 	// Adjusted query to get documents where 'user' is not empty
-	const q = query(articlesRef, where("users", "==", userRef));
+	const q = query(articlesRef, where("user", "==", userRef));
 
 	const querySnapshot = await getDocs(q);
 
+	const tab: Article[] = [];
+
 	querySnapshot.forEach((doc) => {
-		tab.push(doc.data()); // Collect article data
+		tab.push(doc.data() as Article); // Collect article data
 	});
 
 	return tab;
 }
 
+// Helper function to format the Firestore Timestamp
+function formatDate(timestamp: Timestamp): string {
+	const date = timestamp.toDate(); // Convert Timestamp to Date
+	return date.toLocaleString(); // You can adjust the format as needed
+}
+
 export default function ArticlesPage() {
 	const { user } = useAuth(); // Access the logged-in user's data
-	const [articles, setArticles] = useState<any[]>([]); // State to store articles
+	const [articles, setArticles] = useState<Article[]>([]); // State to store articles
 	const [loading, setLoading] = useState<boolean>(true); // Loading state
 
 	useEffect(() => {
@@ -72,6 +95,9 @@ export default function ArticlesPage() {
 						<Card key={index} className="w-full max-w-md mx-auto p-4">
 							<h2 className="text-xl font-medium">{article.title}</h2>
 							<p className="text-sm text-gray-600">{article.content}</p>
+							<p className="text-xs text-gray-400">
+								{formatDate(article.date)} {/* Format the date here */}
+							</p>
 						</Card>
 					))}
 				</div>

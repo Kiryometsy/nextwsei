@@ -19,6 +19,15 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useForm } from "react-hook-form";
 
+interface ProfileFormData {
+	email: string;
+	displayName: string;
+	photoURL: string;
+	city: string;
+	street: string;
+	zipCode: string;
+}
+
 export default function ProfileForm() {
 	const { user } = useAuth();
 	const [profileImage, setProfileImage] = useState(user?.photoURL || ""); // State for displayed image
@@ -29,7 +38,6 @@ export default function ProfileForm() {
 		register,
 		setValue,
 		handleSubmit,
-		watch,
 		formState: { errors },
 	} = useForm({
 		defaultValues: {
@@ -66,12 +74,7 @@ export default function ProfileForm() {
 		fetchUserData();
 	}, [user, setValue]);
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		// This will be handled by react-hook-form via setValue, no need for manual state handling
-	};
-
-	const handleSubmitForm = async (data: any) => {
+	const handleSubmitForm = async (data: ProfileFormData) => {
 		setIsLoading(true);
 		try {
 			// Update profile
@@ -98,8 +101,12 @@ export default function ProfileForm() {
 
 			// Reload user data
 			router.refresh();
-		} catch (err: any) {
-			console.error("Error updating profile:", err);
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				console.error("Error updating profile:", err.message);
+			} else {
+				console.error("An unexpected error occurred:", err);
+			}
 		} finally {
 			setIsLoading(false);
 		}
