@@ -21,11 +21,19 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({
 	const [success, setSuccess] = useState<boolean>(false);
 	const [selectFrom, setSelectFrom] = useState<MatrixItem | null>(null);
 	const [foundCells, setFoundCells] = useState<MatrixItem[]>([]);
-
 	const [grid, setGrid] = useState<string[][]>(generateGrid(gridSize, words)); // Store grid state
+	const [error, setError] = useState<string | null>(null); // Track error state
+
 	const wordList = words;
 
 	const wordSet = useMemo(() => new Set(wordList), [wordList]); // Store words in a set for O(1) lookup
+
+	useEffect(() => {
+		// Check if all words are present in the grid when it's generated
+		if (!areAllWordsPresent(grid, wordList)) {
+			setError("Not all words were placed in the grid. Please try again.");
+		}
+	}, [grid, wordList]);
 
 	useEffect(() => {
 		if (foundWords.length === wordList.length) {
@@ -76,7 +84,6 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({
 	};
 
 	const highlightItem = (item: MatrixItem) => {
-		// Use inline styles instead of querying the DOM for better performance
 		const el = document.querySelector(
 			`.ws-row:nth-child(${item.row + 1}) .ws-col:nth-child(${item.col + 1})`
 		);
@@ -152,6 +159,63 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({
 		setSelectedCells([]);
 		setSelectFrom(null);
 		setSuccess(false);
+		setError(null); // Clear any error messages
+	};
+
+	const areAllWordsPresent = (grid: string[][], words: string[]) => {
+		return words.every((word) => isWordInGrid(grid, word));
+	};
+
+	const isWordInGrid = (grid: string[][], word: string) => {
+		// Check for word existence in the grid (this assumes words are placed horizontally, vertically, or diagonally)
+		for (let row = 0; row < grid.length; row++) {
+			for (let col = 0; col < grid[row].length; col++) {
+				if (checkWordAt(grid, word, row, col)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	};
+
+	const checkWordAt = (
+		grid: string[][],
+		word: string,
+		startRow: number,
+		startCol: number
+	) => {
+		const directions = [
+			{ dx: 0, dy: 1 }, // Right
+			{ dx: 1, dy: 0 }, // Down
+			{ dx: 1, dy: 1 }, // Diagonal down-right
+			{ dx: -1, dy: 1 }, // Diagonal up-right
+			{ dx: 0, dy: -1 }, // Left
+			{ dx: -1, dy: 0 }, // Up
+			{ dx: -1, dy: -1 }, // Diagonal up-left
+			{ dx: 1, dy: -1 }, // Diagonal down-left
+		];
+
+		for (const direction of directions) {
+			let found = true;
+			for (let i = 0; i < word.length; i++) {
+				const x = startRow + i * direction.dx;
+				const y = startCol + i * direction.dy;
+				if (
+					x < 0 ||
+					x >= grid.length ||
+					y < 0 ||
+					y >= grid.length ||
+					grid[x][y] !== word[i]
+				) {
+					found = false;
+					break;
+				}
+			}
+			if (found) {
+				return true;
+			}
+		}
+		return false;
 	};
 
 	return (
@@ -166,6 +230,9 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({
 			<div className="text-lg font-medium mb-4">
 				Score: {foundWords.length} out of {wordList.length}
 			</div>
+			{error && (
+				<div className="text-red-500 font-semibold text-xl">{error}</div>
+			)}
 			<div
 				className="grid gap-1 border-2 border-gray-600"
 				style={{
