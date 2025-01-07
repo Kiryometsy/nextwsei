@@ -84,24 +84,26 @@ export default function ArticlesPage() {
 	}
 
 	return (
-		<div className="flex flex-col items-center space-y-4 p-4">
-			<h1 className="text-2xl font-semibold">Your Articles</h1>
+		<div className="flex h-screen w-full items-center justify-center px-4">
+			<div className="flex flex-col items-center space-y-4 w-full max-w-2xl p-4">
+				<h1 className="text-2xl font-semibold">Your Articles</h1>
 
-			{articles.length === 0 ? (
-				<div>No articles found</div> // Display if no articles are found
-			) : (
-				<div className="space-y-4 w-full">
-					{articles.map((article, index) => (
-						<Card key={index} className="w-full max-w-md mx-auto p-4">
-							<h2 className="text-xl font-medium">{article.title}</h2>
-							<p className="text-sm text-gray-600">{article.content}</p>
-							<p className="text-xs text-gray-400">
-								{formatDate(article.date)} {/* Format the date here */}
-							</p>
-						</Card>
-					))}
-				</div>
-			)}
+				{articles.length === 0 ? (
+					<div>No articles found</div> // Display if no articles are found
+				) : (
+					<div className="space-y-4 w-full">
+						{articles.map((article, index) => (
+							<Card key={index} className="w-full p-4 mx-auto">
+								<h2 className="text-xl font-medium">{article.title}</h2>
+								<p className="text-sm text-gray-600">{article.content}</p>
+								<p className="text-xs text-gray-400">
+									{formatDate(article.date)} {/* Format the date here */}
+								</p>
+							</Card>
+						))}
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

@@ -24,11 +24,13 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export function NavProjects({
 	projects,
 }: {
 	projects: {
+		author: string;
 		name: string;
 		url: string;
 		icon: LucideIcon;
@@ -43,7 +45,7 @@ export function NavProjects({
 				{projects.map((item) => (
 					<SidebarMenuItem key={item.name}>
 						<SidebarMenuButton asChild>
-							<a href={item.url}>
+							<a href={item.author}>
 								<item.icon />
 								<span>{item.name}</span>
 							</a>
@@ -60,10 +62,12 @@ export function NavProjects({
 								side={isMobile ? "bottom" : "right"}
 								align={isMobile ? "end" : "start"}
 							>
-								<DropdownMenuItem>
-									<Folder className="text-muted-foreground" />
-									<span>View Project</span>
-								</DropdownMenuItem>
+								<Link href={item.url} passHref>
+									<DropdownMenuItem>
+										<Folder className="text-muted-foreground" />
+										<span>View Project</span>
+									</DropdownMenuItem>
+								</Link>
 								<DropdownMenuItem>
 									<Forward className="text-muted-foreground" />
 									<span>Share Project</span>
@@ -78,10 +82,12 @@ export function NavProjects({
 					</SidebarMenuItem>
 				))}
 				<SidebarMenuItem>
-					<SidebarMenuButton className="text-sidebar-foreground/70">
-						<MoreHorizontal className="text-sidebar-foreground/70" />
-						<span>More</span>
-					</SidebarMenuButton>
+					<Link href="https://github.com/Kiryometsy?tab=repositories">
+						<SidebarMenuButton className="text-sidebar-foreground/70">
+							<MoreHorizontal className="text-sidebar-foreground/70" />
+							<span>More</span>
+						</SidebarMenuButton>
+					</Link>
 				</SidebarMenuItem>
 			</SidebarMenu>
 		</SidebarGroup>

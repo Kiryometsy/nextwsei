@@ -1,5 +1,4 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 type MatrixItem = {
 	row: number;
@@ -9,25 +8,30 @@ type MatrixItem = {
 type WordSearchGameProps = {
 	gridSize: number;
 	words: string[];
+	fontSize: number;
 };
 
-const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
-	const [grid, setGrid] = useState<string[][]>([]);
+const WordSearchGame: React.FC<WordSearchGameProps> = ({
+	gridSize,
+	words,
+	fontSize,
+}) => {
 	const [selectedCells, setSelectedCells] = useState<MatrixItem[]>([]);
 	const [foundWords, setFoundWords] = useState<string[]>([]);
 	const [success, setSuccess] = useState<boolean>(false);
 	const [selectFrom, setSelectFrom] = useState<MatrixItem | null>(null);
-	const [foundCells, setFoundCells] = useState<MatrixItem[]>([]); // New state for found cells
+	const [foundCells, setFoundCells] = useState<MatrixItem[]>([]);
+
+	const [grid, setGrid] = useState<string[][]>(generateGrid(gridSize, words)); // Store grid state
+	const wordList = words;
+
+	const wordSet = useMemo(() => new Set(wordList), [wordList]); // Store words in a set for O(1) lookup
 
 	useEffect(() => {
-		setGrid(generateGrid(gridSize, words));
-	}, [gridSize, words]);
-
-	useEffect(() => {
-		if (foundWords.length === words.length) {
+		if (foundWords.length === wordList.length) {
 			setSuccess(true);
 		}
-	}, [foundWords]);
+	}, [foundWords, wordList.length]);
 
 	const handleSelect = (item: MatrixItem) => (event: React.MouseEvent) => {
 		event.preventDefault();
@@ -72,6 +76,7 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
 	};
 
 	const highlightItem = (item: MatrixItem) => {
+		// Use inline styles instead of querying the DOM for better performance
 		const el = document.querySelector(
 			`.ws-row:nth-child(${item.row + 1}) .ws-col:nth-child(${item.col + 1})`
 		);
@@ -87,14 +92,14 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
 		const selectedWord = selected
 			.map(({ row, col }) => grid[row][col])
 			.join("");
-		if (words.includes(selectedWord) && !foundWords.includes(selectedWord)) {
+		if (wordSet.has(selectedWord) && !foundWords.includes(selectedWord)) {
 			setFoundWords((prev) => [...prev, selectedWord]);
-			markAsFound(selected, selectedWord);
+			markAsFound(selected);
 		}
 	};
 
-	const markAsFound = (selected: MatrixItem[], word: string) => {
-		setFoundCells((prev) => [...prev, ...selected]); // Update foundCells state
+	const markAsFound = (selected: MatrixItem[]) => {
+		setFoundCells((prev) => [...prev, ...selected]);
 		displayScore();
 	};
 
@@ -106,22 +111,18 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
 	): MatrixItem[] | null => {
 		const items: MatrixItem[] = [];
 
-		// Oblicz różnicę w wierszach i kolumnach
 		const rowDiff = endRow - startRow;
 		const colDiff = endCol - startCol;
 
-		// Normalizuj kierunki na wartości -1, 0 lub 1
-		let rowDir = rowDiff === 0 ? 0 : rowDiff / Math.abs(rowDiff);
-		let colDir = colDiff === 0 ? 0 : colDiff / Math.abs(colDiff);
+		const rowDir = rowDiff === 0 ? 0 : rowDiff / Math.abs(rowDiff);
+		const colDir = colDiff === 0 ? 0 : colDiff / Math.abs(colDiff);
 
-		// Jeśli zaznaczenie nie jest w linii prostej ani ukośnej, zwracamy null
 		if (
 			!(rowDir === 0 || colDir === 0 || Math.abs(rowDiff) === Math.abs(colDiff))
 		) {
 			return null;
 		}
 
-		// Generuj pola na trasie między startem a końcem
 		let row = startRow;
 		let col = startCol;
 		while (row !== endRow || col !== endCol) {
@@ -129,11 +130,9 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
 			row += rowDir;
 			col += colDir;
 
-			// Zatrzymaj, jeśli wyjdziemy poza granice tablicy
 			if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) break;
 		}
 
-		// Dodaj ostatnie pole, jeśli jest w granicach
 		if (row === endRow && col === endCol) {
 			items.push({ row: endRow, col: endCol });
 		}
@@ -142,8 +141,17 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
 	};
 
 	const displayScore = () => {
-		// Implement score display logic (if needed)
-		console.log(`Score: ${foundWords.length + 1} out of ${words.length}`);
+		console.log(`Score: ${foundWords.length + 1} out of ${wordList.length}`);
+	};
+
+	const generateNewGrid = () => {
+		const newGrid = generateGrid(gridSize, wordList);
+		setGrid(newGrid);
+		setFoundWords([]);
+		setFoundCells([]);
+		setSelectedCells([]);
+		setSelectFrom(null);
+		setSuccess(false);
 	};
 
 	return (
@@ -155,13 +163,9 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
 			}}
 		>
 			<h1 className="text-2xl font-bold">Word Search Game</h1>
-
-			{/* Score Display */}
 			<div className="text-lg font-medium mb-4">
-				Score: {foundWords.length} out of {words.length}
+				Score: {foundWords.length} out of {wordList.length}
 			</div>
-
-			{/* Grid */}
 			<div
 				className="grid gap-1 border-2 border-gray-600"
 				style={{
@@ -183,6 +187,7 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
 									? "bg-yellow-300"
 									: "bg-white"
 							}`}
+							style={{ fontSize: `${fontSize}px` }}
 							onMouseDown={handleSelect({ row: rowIndex, col: colIndex })}
 							onMouseEnter={() =>
 								handleMouseover({ row: rowIndex, col: colIndex })
@@ -193,11 +198,10 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
 					))
 				)}
 			</div>
-
 			<div className="w-full text-center">
 				<h3 className="text-lg font-semibold mb-2">Words to Find:</h3>
 				<ul className="list-none flex flex-wrap justify-center gap-4">
-					{words.map((word) => (
+					{wordList.map((word) => (
 						<li
 							key={word}
 							className={`text-lg ${
@@ -211,31 +215,36 @@ const WordSearchGame: React.FC<WordSearchGameProps> = ({ gridSize, words }) => {
 					))}
 				</ul>
 			</div>
-
 			{success && (
 				<div className="text-green-500 font-semibold text-xl">
 					🎉 Congratulations! You found all the words!
 				</div>
 			)}
+			<button
+				onClick={generateNewGrid}
+				className="mt-6 px-4 py-2 bg-blue-500 text-white rounded-lg"
+			>
+				Generate New Grid
+			</button>
 		</div>
 	);
 };
 
-// Utility Functions
+// Grid generation logic
 const generateGrid = (gridSize: number, words: string[]): string[][] => {
-	const grid: string[][] = Array.from({ length: gridSize }, () =>
-		Array.from({ length: gridSize }, () => "")
-	);
+	const grid: string[][] = Array(gridSize)
+		.fill(null)
+		.map(() => Array(gridSize).fill(""));
 
 	words.forEach((word) => {
 		placeWordInGrid(grid, word);
 	});
 
-	// Fill empty cells with random letters
+	// Fill the grid with random letters
 	for (let i = 0; i < gridSize; i++) {
 		for (let j = 0; j < gridSize; j++) {
-			if (!grid[i][j]) {
-				grid[i][j] = randomLetter();
+			if (grid[i][j] === "") {
+				grid[i][j] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
 			}
 		}
 	}
@@ -243,6 +252,7 @@ const generateGrid = (gridSize: number, words: string[]): string[][] => {
 	return grid;
 };
 
+// Helper function to place a word in the grid
 const placeWordInGrid = (grid: string[][], word: string): void => {
 	const directions = [
 		{ dx: 0, dy: 1 }, // Right
@@ -257,8 +267,11 @@ const placeWordInGrid = (grid: string[][], word: string): void => {
 
 	const gridSize = grid.length;
 	let placed = false;
+	let attempts = 0;
+	const maxAttempts = 100;
 
-	while (!placed) {
+	while (!placed && attempts < maxAttempts) {
+		attempts++;
 		const direction = directions[Math.floor(Math.random() * directions.length)];
 		const startX = Math.floor(Math.random() * gridSize);
 		const startY = Math.floor(Math.random() * gridSize);
@@ -280,6 +293,7 @@ const placeWordInGrid = (grid: string[][], word: string): void => {
 	}
 };
 
+// Helper function to check if a word can be placed
 const canPlaceWord = (
 	grid: string[][],
 	word: string,
@@ -287,19 +301,15 @@ const canPlaceWord = (
 	startY: number,
 	direction: { dx: number; dy: number }
 ): boolean => {
+	const gridSize = grid.length;
 	for (let i = 0; i < word.length; i++) {
 		const x = startX + i * direction.dx;
 		const y = startY + i * direction.dy;
-		if (grid[x][y] && grid[x][y] !== word[i]) {
+		if (x < 0 || x >= gridSize || y < 0 || y >= gridSize || grid[x][y] !== "") {
 			return false;
 		}
 	}
 	return true;
-};
-
-const randomLetter = (): string => {
-	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	return alphabet[Math.floor(Math.random() * alphabet.length)];
 };
 
 export default WordSearchGame;

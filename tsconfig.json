@@ -29,7 +29,8 @@
 		"**/*.tsx",
 		".next/types/**/*.ts",
 		"lib/firebase/AuthContext.jsx",
-		"app/(public)/user/signin/page.jsx"
-, "app/(protected)/layout.tsx"	],
+		"app/(public)/user/signin/page.jsx",
+		"app/(protected)/layout.tsx"
+	],
 	"exclude": ["node_modules"]
 }

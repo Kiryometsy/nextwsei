@@ -11,11 +11,11 @@ export default function Navbar({ className }: NavbarProps) {
 	const { user } = useAuth();
 	return (
 		<header
-			className={`${className} flex items-center justify-between h-16 px-4 bg-muted/10 shadow-sm`}
+			className={`${className} flex items-center justify-between h-16 px-4 bg-white shadow-sm`}
 		>
 			<div className="flex items-center gap-4">
 				<SidebarTrigger />
-				<span className="text-lg font-semibold">My App</span>
+				<span className="text-lg font-semibold">NextWsei</span>
 				<span className="text-lg font-semibold">
 					{user?.displayName || user?.email}
 				</span>
