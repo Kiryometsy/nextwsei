@@ -25,6 +25,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { useState } from "react";
 
 export function NavProjects({
 	projects,
@@ -37,6 +38,15 @@ export function NavProjects({
 	}[];
 }) {
 	const { isMobile } = useSidebar();
+	const [copied, setCopied] = useState(false);
+
+	// Handle copying the project link
+	const handleCopyLink = (url: string) => {
+		navigator.clipboard.writeText(url).then(() => {
+			setCopied(true);
+			setTimeout(() => setCopied(false), 2000); // Hide after 2 seconds
+		});
+	};
 
 	return (
 		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -68,10 +78,15 @@ export function NavProjects({
 										<span>View Project</span>
 									</DropdownMenuItem>
 								</Link>
-								<DropdownMenuItem>
+								<DropdownMenuItem onClick={() => handleCopyLink(item.url)}>
 									<Forward className="text-muted-foreground" />
-									<span>Share Project</span>
+									<span>Copy Project Link</span>
 								</DropdownMenuItem>
+								{copied && (
+									<div className="absolute top-0 right-0 p-2 bg-green-500 text-white rounded-md">
+										Link copied!
+									</div>
+								)}
 								<DropdownMenuSeparator />
 								<DropdownMenuItem>
 									<Trash2 className="text-muted-foreground" />
